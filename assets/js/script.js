@@ -57,7 +57,17 @@ var createTaskEl = function(taskDataObj) {
   // create task actions (buttons and select) for task
   var taskActionsEl = createTaskActions(taskIdCounter);
   listItemEl.appendChild(taskActionsEl);
-  tasksToDoEl.appendChild(listItemEl);
+
+  if (tasks[taskIdCounter].status === "to do") {
+    listItemEl.querySelector("select[name='status-change']").selectedIndex = 0;
+    tasksToDoEl.appendChild(listItemEl);
+  } else if (tasks[taskIdCounter].status === "in progress") {
+    listItemEl.querySelector("select[name='status-change']").selectedIndex = 1;
+    tasksInProgressEl.appendChild(listItemEl);
+  } else if (tasks[taskIdCounter].status === "completed") {
+    listItemEl.querySelector("select[name='status-change']").selectedIndex =2;
+    tasksCompletedEl.appendChild(listItemEl);
+  }
 
   // increase task counter for next unique id
   taskIdCounter++;
@@ -218,19 +228,21 @@ var saveTasks = function() {
 //Iterates through a tasks array and creates task elements on the page from it.
 var loadTasks = function() {
 
-  tasks = localStorage.getItem("tasks", tasks);
-  if (!tasks) {
-    tasks = [];
+  var savedTasks = localStorage.getItem("tasks");
+
+  if (!savedTasks) {
     return false;
   };
 
-  tasks = JSON.parse(tasks);
+  savedTasks = JSON.parse(savedTasks);
 
-  for (taskIdCounter=0; taskIdCounter<tasks.length; taskIdCounter++) {
+  for (var i=0; i<savedTasks.length; i++) {
+    createTaskEl(savedTasks[i]);
+  }
+}
+  /*for (taskIdCounter=0; taskIdCounter<tasks.length; taskIdCounter++) {
     tasks[taskIdCounter].id = taskIdCounter;
 
-    // Recreate createTaskEl for retrieving stored tasks
-    //createTaskEl(tasks[taskIdCounter]);
     var listItemEl = document.createElement("li");
     listItemEl.className = "task-item";
     listItemEl.setAttribute("data-task-id", taskIdCounter);
@@ -240,7 +252,6 @@ var loadTasks = function() {
     taskInfoEl.innerHTML = "<h3 class='task-name'>" + tasks[taskIdCounter].name + "</h3><span class='task-type'>" + tasks[taskIdCounter].type + "</span>";
     listItemEl.appendChild(taskInfoEl);
 
-    // create task actions (buttons and select) for task
     var taskActionsEl = createTaskActions(taskIdCounter);
     listItemEl.appendChild(taskActionsEl);
    
@@ -256,6 +267,7 @@ var loadTasks = function() {
     }
   }
 }
+*/
 
 // Create a new task
 formEl.addEventListener("submit", taskFormHandler);
